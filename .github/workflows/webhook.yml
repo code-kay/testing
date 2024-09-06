@@ -37,41 +37,41 @@ jobs:
                           {
                             "type": "ColumnSet",
                             "columns": [
-                            {
+                              {
                                 "type": "Column",
                                 "targetWidth": "atLeast:narrow",
                                 "items": [
-                                {
+                                  {
                                     "type": "Image",
                                     "style": "Person",
                                     "url": "https://cdn-icons-png.flaticon.com/512/25/25231.png",
                                     "size": "Small"
-                                }
+                                  }
                                 ],
                                 "width": "auto"
-                            },
-                            {
+                              },
+                              {
                                 "type": "Column",
                                 "spacing": "medium",
                                 "verticalContentAlignment": "center",
                                 "items": [
-                                {
+                                  {
                                     "type": "TextBlock",
                                     "weight": "Bolder",
                                     "size": "Large",
                                     "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!",
                                     "wrap": true
-                                },
+                                  },
                                 ],
                                 "width": "auto"
+                              },
+                            ]
                           },
                           {
                             "type": "TextBlock",
                             "text": "${{ env.commit_messages }}",
                             "wrap": true
                           }
-                        ]
-                        }
                       ]
                     }
                   }
