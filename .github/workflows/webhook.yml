@@ -29,13 +29,60 @@ jobs:
                       "type": "AdaptiveCard",
                       "version": "1.2",
                       "body": [
-                        {
-                          "type": "TextBlock",
-                          "text": "'"$BRANCH_NAME"' 브랜치 빌드 시작!"
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "텍스트 블록밖에 안되는건가?"
+                       {
+                            "type": "ColumnSet",
+                            "columns": [
+                            {
+                                "type": "Column",
+                                "targetWidth": "atLeast:narrow",
+                                "items": [
+                                {
+                                    "type": "Image",
+                                    "style": "Person",
+                                    "url": "https://aka.ms/AAp9xo4",
+                                    "size": "Small"
+                                }
+                                ],
+                                "width": "auto"
+                            },
+                            {
+                                "type": "Column",
+                                "spacing": "medium",
+                                "verticalContentAlignment": "center",
+                                "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "text": "David Claux",
+                                    "wrap": true
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "targetWidth": "atMost:narrow",
+                                    "spacing": "None",
+                                    "text": "Platform Architect",
+                                    "isSubtle": true,
+                                    "wrap": true
+                                }
+                                ],
+                                "width": "auto"
+                            },
+                            {
+                                "type": "Column",
+                                "targetWidth": "atLeast:standard",
+                                "spacing": "medium",
+                                "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Platform Architect",
+                                    "isSubtle": true,
+                                    "wrap": true
+                                }
+                                ],
+                                "width": "stretch",
+                                "verticalContentAlignment": "center"
+                            }
+                            ]
                         }
                       ]
                     }
