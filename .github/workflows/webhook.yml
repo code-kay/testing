@@ -32,6 +32,10 @@ jobs:
                         {
                           "type": "TextBlock",
                           "text": "'"$BRANCH_NAME"' 브랜치 빌드 시작!"
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "텍스트 블록밖에 안되는건가?"
                         }
                       ]
                     }
