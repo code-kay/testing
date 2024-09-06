@@ -14,17 +14,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 
+          fetch-depth: 2 
 
-      - name: Extract all commit messages from the PR merge
+      - name: 커밋 메시지 추출
         run: |
-          # PR에서 머지된 모든 커밋 메시지를 임시 파일에 저장
-          git log --pretty=format:"- %s" $GITHUB_SHA~10..$GITHUB_SHA > commit_messages.txt
+          # 이전 커밋과 현재 커밋의 차이를 기준으로 새로운 커밋만 추출
+          previous_commit=$(git rev-parse HEAD^)
+          current_commit=$(git rev-parse HEAD)
+          git log --pretty=format:"- %s" $previous_commit..$current_commit > new_commit_messages.txt
 
       - name: 웹훅 보내기
         run: |
-          # 파일에서 커밋 메시지 읽어오기
-          commit_messages=$(cat commit_messages.txt)
+          new_commit_messages=$(cat new_commit_messages.txt)
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
           curl -v -X POST "https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ" \
@@ -75,7 +76,7 @@ jobs:
                           },
                           {
                             "type": "TextBlock",
-                            "text": "'"$commit_messages"'",
+                            "text": "'"$new_commit_messages"'",
                             "wrap": true
                           }
                       ]
