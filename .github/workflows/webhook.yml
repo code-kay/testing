@@ -11,51 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # 전체 히스토리 가져오기
 
-      - name: Restore previous commit SHA
-        id: restore_commit_sha
-        uses: actions/cache@v3
-        with:
-          path: previous_commit.txt  # 이전 SHA를 저장할 파일
-          key: ${{ runner.os }}-previous-commit-sha  # 캐시 키
-
-      - name: Determine previous commit SHA
+      # 이전 커밋과 이후 커밋 사이의 변경된 파일 추출
+      - name: Get modified files
         run: |
-          if [ -f previous_commit.txt ]; then
-            previous_commit=$(cat previous_commit.txt)
-          else
-            previous_commit=$(git rev-parse HEAD~1)  # 파일이 없으면 직전 커밋을 기준으로 설정
-          fi
-          echo "Previous commit: $previous_commit"
-          echo "::set-output name=previous_commit::$previous_commit"
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > modified_files.txt
 
-      - name: Extract new commit messages
+      # 변경된 파일과 커밋 메시지 추출
+      - name: Extract commit messages and modified files
         run: |
-          # 직전 커밋 SHA를 사용하여 새로운 커밋 메시지 추출
-          current_commit=$(git rev-parse HEAD)
-          echo "Current commit: $current_commit"
-          git log --pretty=format:"- %s" ${{ steps.restore_commit_sha.outputs.previous_commit }}..$current_commit > new_commit_messages.txt
+          # 커밋 메시지 추출
+          git log --pretty=format:"- %s" ${{ github.event.before }}..${{ github.event.after }} > new_commit_messages.txt
+          
+          # 수정된 파일 목록 확인
+          echo "Modified files:"
+          cat modified_files.txt
+          echo "Commit messages:"
+          cat new_commit_messages.txt
 
-      - name: Save current commit SHA for the next run
+      # 웹훅 전송
+      - name: Send webhook with modified files and commit messages
         run: |
-          git rev-parse HEAD > previous_commit.txt
-
-      - name: Save commit SHA to cache
-        uses: actions/cache@v3
-        with:
-          path: previous_commit.txt
-          key: ${{ runner.os }}-previous-commit-sha
-
-      - name: 웹훅 보내기
-        run: |
-          # 새로 추가된 커밋 메시지 읽기
-          new_commit_messages=$(cat new_commit_messages.txt)
+          modified_files=$(cat modified_files.txt)
+          commit_messages=$(cat new_commit_messages.txt)
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+
           curl -v -X POST "https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ" \
           -H "Content-Type: application/json" \
           -d '{
@@ -69,44 +55,23 @@ jobs:
                       "type": "AdaptiveCard",
                       "version": "1.2",
                       "body": [
-                          {
-                            "type": "ColumnSet",
-                            "columns": [
-                              {
-                                "type": "Column",
-                                "targetWidth": "atLeast:narrow",
-                                "items": [
-                                  {
-                                    "type": "Image",
-                                    "style": "Person",
-                                    "url": "https://cdn-icons-png.flaticon.com/512/25/25231.png",
-                                    "size": "Small"
-                                  }
-                                ],
-                                "width": "auto"
-                              },
-                              {
-                                "type": "Column",
-                                "spacing": "medium",
-                                "verticalContentAlignment": "center",
-                                "items": [
-                                  {
-                                    "type": "TextBlock",
-                                    "weight": "Bolder",
-                                    "size": "Large",
-                                    "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!",
-                                    "wrap": true
-                                  },
-                                ],
-                                "width": "auto"
-                              },
-                            ]
-                          },
-                          {
-                            "type": "TextBlock",
-                            "text": "'"$new_commit_messages"'",
-                            "wrap": true
-                          }
+                        {
+                          "type": "TextBlock",
+                          "weight": "Bolder",
+                          "size": "Large",
+                          "text": "'"$BRANCH_NAME"' 브랜치에서 빌드가 시작되었습니다!",
+                          "wrap": true
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "커밋 메시지:\n'"$commit_messages"'",
+                          "wrap": true
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "수정된 파일:\n'"$modified_files"'",
+                          "wrap": true
+                        }
                       ]
                     }
                   }
