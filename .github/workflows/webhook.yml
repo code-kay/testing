@@ -14,31 +14,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 모든 커밋 히스토리 가져오기
+          fetch-depth: 0  # 전체 히스토리 가져오기
 
       - name: Retrieve previous commit SHA
         id: get_previous_sha
         run: |
-          # 저장된 직전 SHA가 있으면 가져오고 없으면 초기 커밋으로 설정
+          # 이전 SHA가 있으면 가져오고, 없으면 기본적으로 HEAD~1로 설정
           if [ -f previous_commit.txt ]; then
-            cat previous_commit.txt
+            previous_commit=$(cat previous_commit.txt)
           else
-            echo "HEAD^" > previous_commit.txt
+            previous_commit=$(git rev-parse HEAD~1)
           fi
+          echo "Previous commit: $previous_commit"
+          echo "::set-output name=previous_commit::$previous_commit"
 
       - name: Extract all commit messages
         run: |
-          # 직전 커밋 SHA를 읽어오고 새로운 SHA와 비교
-          previous_commit=$(cat previous_commit.txt)
+          # 직전 커밋 SHA를 사용하여 새로운 커밋 메시지 추출
           current_commit=$(git rev-parse HEAD)
-          echo "Previous commit: $previous_commit"
           echo "Current commit: $current_commit"
-
-          # 이전 커밋과 현재 커밋 사이의 모든 커밋 메시지 추출
-          git log --pretty=format:"- %s" $previous_commit..$current_commit > new_commit_messages.txt
+          git log --pretty=format:"- %s" ${{ steps.get_previous_sha.outputs.previous_commit }}..$current_commit > new_commit_messages.txt
 
       - name: Save current commit SHA for the next run
         run: |
+          # 현재 커밋 SHA를 저장하여 이후 실행에서 사용
           git rev-parse HEAD > previous_commit.txt
 
       - name: 웹훅 보내기
