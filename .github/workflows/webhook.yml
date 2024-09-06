@@ -16,37 +16,68 @@ jobs:
         run: |
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
-          curl -X POST "https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ" \
+          curl -X POST https://example.com/webhook \
           -H "Content-Type: application/json" \
           -d '{
-                "type": "Foreach",
-                "foreach": [
-                  {"content": "Adaptive card content for '$BRANCH_NAME' branch"}
-                ],
-                "actions": {
-                  "Post_card_in_a_chat_or_channel": {
-                    "type": "OpenApiConnection",
-                    "inputs": {
-                      "parameters": {
-                        "poster": "Flow bot",
-                        "location": "Channel",
-                        "body/recipient/groupId": "deecbd6c-1e39-4ede-aec6-df5370ce7567",
-                        "body/recipient/channelId": "19:8853a15875634c7285656df461708347@thread.tacv2",
-                        "body/messageBody": "@items('Send_each_adaptive_card')?['content']"
-                      },
-                      "host": {
-                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
-                        "connection": "shared_teams",
-                        "operationId": "PostCardToConversation"
-                      }
-                    },
-                    "metadata": {
-                      "operationMetadataId": "82e88d9a-76e6-48c9-8c8b-1d1da62acc94"
+                "attachments": [
+                  {
+                    "contentType": "object",
+                    "content": {
+                      "type": "AdaptiveCard",
+                      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                      "version": "1.2",
+                      "body": [
+                        {
+                          "type": "TextBlock",
+                          "size": "Medium",
+                          "weight": "Bolder",
+                          "text": "{{ notification.title | escape(strategy=\"json\") }}"
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "Dependency-Track",
+                          "weight": "Bolder",
+                          "spacing": "Medium"
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "{{ timestamp }}",
+                          "spacing": "None"
+                        },
+                        {
+                          "type": "Image",
+                          "url": "https://raw.githubusercontent.com/DependencyTrack/branding/master/dt-logo-symbol-blue-background.png",
+                          "size": "Small",
+                          "spacing": "Medium"
+                        },
+                        {
+                          "type": "FactSet",
+                          "facts": [
+                            {
+                              "title": "VulnID",
+                              "value": "{{ subject.vulnerability.vulnId | escape(strategy=\"json\") }}"
+                            },
+                            {
+                              "title": "Severity",
+                              "value": "{{ subject.vulnerability.severity | escape(strategy=\"json\") }}"
+                            },
+                            {
+                              "title": "Source",
+                              "value": "{{ subject.vulnerability.source | escape(strategy=\"json\") }}"
+                            },
+                            {
+                              "title": "Component",
+                              "value": "{{ subject.component.toString | escape(strategy=\"json\") }}"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "{{ notification.content | escape(strategy=\"json\") }}",
+                          "wrap": true
+                        }
+                      ]
                     }
                   }
-                },
-                "runAfter": {},
-                "metadata": {
-                  "operationMetadataId": "1b8dddd5-792e-44fe-aad1-db3bd51beecc"
-                }
+                ]
               }'
