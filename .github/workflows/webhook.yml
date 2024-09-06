@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - stage
+    #   - stage
       - dev
 
 jobs:
@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send webhook with dynamic branch name
+      - name: 커밋 메시지 추출
+        run: |
+          commits=$(jq -r '.commits[] | .message' < $GITHUB_EVENT_PATH)
+          echo "commit_messages=${commits}" >> $GITHUB_ENV
+
+      - name: 웹훅 보내기
         run: |
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
@@ -29,10 +34,44 @@ jobs:
                       "type": "AdaptiveCard",
                       "version": "1.2",
                       "body": [
-                        {
-                          "type": "TextBlock",
-                          "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!"
-                        }
+                          {
+                            "type": "ColumnSet",
+                            "columns": [
+                              {
+                                "type": "Column",
+                                "targetWidth": "atLeast:narrow",
+                                "items": [
+                                  {
+                                    "type": "Image",
+                                    "style": "Person",
+                                    "url": "https://cdn-icons-png.flaticon.com/512/25/25231.png",
+                                    "size": "Small"
+                                  }
+                                ],
+                                "width": "auto"
+                              },
+                              {
+                                "type": "Column",
+                                "spacing": "medium",
+                                "verticalContentAlignment": "center",
+                                "items": [
+                                  {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "size": "Large",
+                                    "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!",
+                                    "wrap": true
+                                  },
+                                ],
+                                "width": "auto"
+                              },
+                            ]
+                          },
+                          {
+                            "type": "TextBlock",
+                            "text": "${{ env.commit_messages }}",
+                            "wrap": true
+                          }
                       ]
                     }
                   }
