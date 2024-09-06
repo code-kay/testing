@@ -19,39 +19,48 @@ jobs:
           curl -X POST https://example.com/webhook \
           -H "Content-Type: application/json" \
           -d '{
-                "type": "Application/JSON",
-                "attachments": [
+                "type": "AdaptiveCard",
+                "version": "1.2",
+                "body": [
                   {
-                    "contentType": "application/vnd.microsoft.card.adaptive",
-                    "content": {
-                      "type": "AdaptiveCard",
-                      "version": "1.4",
-                      "body": [
-                        {
-                          "type": "TextBlock",
-                          "text": "Unassigned tickets (Number of tickets: {{lookupIssues.size}})",
-                          "wrap": true,
-                          "weight": "Bolder",
-                          "size": "Large",
-                          "color": "Accent"
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "{{#lookupIssues}}",
-                          "wrap": true
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "*{{fields.reporter.displayName.jsonEncode}}* has raised [{{key}} {{summary.jsonEncode}}]({{url}})",
-                          "wrap": true
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "{{/lookupIssues}}",
-                          "wrap": true
-                        }
-                      ]
-                    }
+                    "type": "Container",
+                    "items": [
+                      {
+                        "type": "TextBlock",
+                        "text": "",
+                        "weight": "Bolder",
+                        "size": "Large",
+                        "color": "Attention",
+                        "horizontalAlignment": "Center"
+                      },
+                      {
+                        "type": "TextBlock",
+                        "text": "Summary: ",
+                        "wrap": true,
+                        "size": "Medium",
+                        "weight": "Bolder"
+                      },
+                      {
+                        "type": "TextBlock",
+                        "text": "",
+                        "wrap": true,
+                        "size": "Medium",
+                        "weight": "Bolder"
+                      },
+                      {
+                        "type": "ActionSet",
+                        "actions": [
+                          {
+                            "type": "Action.OpenUrl",
+                            "title": "",
+                            "url": ""
+                          }
+                        ],
+                        "spacing": "Medium"
+                      }
+                    ],
+                    "style": "emphasis",
+                    "bleed": true
                   }
                 ]
               }'
