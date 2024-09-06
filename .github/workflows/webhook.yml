@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-    #   - stage
       - dev
 
 jobs:
@@ -13,19 +12,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 모든 커밋을 가져오기 위해 fetch-depth를 0으로 설정
+          fetch-depth: 0 
 
       - name: Extract all commit messages from the PR merge
         run: |
-          # PR에서 머지된 모든 커밋 메시지를 가져오기
-          commits=$(git log --pretty=format:"%h %s" $GITHUB_SHA~10..$GITHUB_SHA)  # 최근 10개의 커밋 메시지 추출
-          echo "commit_messages=${commits}" >> $GITHUB_ENV
-
+          # PR에서 머지된 모든 커밋 메시지를 임시 파일에 저장
+          git log --pretty=format:"- %s" $GITHUB_SHA~10..$GITHUB_SHA > commit_messages.txt
 
       - name: 웹훅 보내기
         run: |
+          # 파일에서 커밋 메시지 읽어오기
+          commit_messages=$(cat commit_messages.txt)
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
           curl -v -X POST "https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ" \
@@ -76,7 +75,7 @@ jobs:
                           },
                           {
                             "type": "TextBlock",
-                            "text": "${{ env.commit_messages }}",
+                            "text": "'"${{ env.commit_messages }}"'",
                             "wrap": true
                           }
                       ]
