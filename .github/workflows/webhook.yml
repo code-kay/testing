@@ -19,94 +19,22 @@ jobs:
           curl -v -X POST "https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ" \
           -H "Content-Type: application/json" \
           -d '{
-                "type": "AdaptiveCard",
-                "version": "1.2",
-                "body": [
+                "type": "message",
+                "attachments": [
                   {
-                    "type": "TextBlock",
-                    "text": "Press the buttons to toggle the images!",
-                    "wrap": true
-                  },
-                  {
-                    "type": "TextBlock",
-                    "text": "Here are some images:",
-                    "isVisible": false,
-                    "id": "textToToggle"
-                  },
-                  {
-                    "type": "ColumnSet",
-                    "columns": [
-                      {
-                        "type": "Column",
-                        "items": [
-                          {
-                            "style": "person",
-                            "type": "Image",
-                            "url": "https://picsum.photos/100/100?image=112",
-                            "isVisible": false,
-                            "id": "imageToToggle",
-                            "altText": "sample image 1",
-                            "size": "medium"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "items": [
-                          {
-                            "type": "Image",
-                            "url": "https://picsum.photos/100/100?image=123",
-                            "isVisible": false,
-                            "id": "imageToToggle2",
-                            "altText": "sample image 2",
-                            "size": "medium"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                "actions": [
-                  {
-                    "type": "Action.ToggleVisibility",
-                    "title": "Toggle!",
-                    "targetElements": [ "textToToggle", "imageToToggle", "imageToToggle2" ]
-                  },
-                  {
-                    "type": "Action.ToggleVisibility",
-                    "title": "Show!",
-                    "targetElements": [
-                      {
-                        "elementId": "textToToggle",
-                        "isVisible": true
-                      },
-                      {
-                        "elementId": "imageToToggle",
-                        "isVisible": true
-                      },
-                      {
-                        "elementId": "imageToToggle2",
-                        "isVisible": true
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Action.ToggleVisibility",
-                    "title": "Hide!",
-                    "targetElements": [
-                      {
-                        "elementId": "textToToggle",
-                        "isVisible": false
-                      },
-                      {
-                        "elementId": "imageToToggle",
-                        "isVisible": false
-                      },
-                      {
-                        "elementId": "imageToToggle2",
-                        "isVisible": false
-                      }
-                    ]
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "contentUrl": null,
+                    "content": {
+                      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                      "type": "AdaptiveCard",
+                      "version": "1.2",
+                      "body": [
+                        {
+                          "type": "TextBlock",
+                          "text": "For Samples and Templates, see [https://adaptivecards.io/samples](https://adaptivecards.io/samples)"
+                        }
+                      ]
+                    }
                   }
                 ]
               }'
