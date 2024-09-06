@@ -1,0 +1,52 @@
+name: Send Webhook on Push
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+      - dev
+
+jobs:
+  send-webhook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send webhook with dynamic branch name
+        run: |
+          BRANCH_NAME="${{ github.ref }}"
+          BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+          curl -X POST https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ \
+          -H "Content-Type: application/json" \
+          -d '{
+                "type": "Foreach",
+                "foreach": [
+                  {"content": "Adaptive card content for '$BRANCH_NAME' branch"}
+                ],
+                "actions": {
+                  "Post_card_in_a_chat_or_channel": {
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "parameters": {
+                        "poster": "Flow bot",
+                        "location": "Channel",
+                        "body/recipient/groupId": "deecbd6c-1e39-4ede-aec6-df5370ce7567",
+                        "body/recipient/channelId": "19:8853a15875634c7285656df461708347@thread.tacv2",
+                        "body/messageBody": "@items('Send_each_adaptive_card')?['content']"
+                      },
+                      "host": {
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                        "connection": "shared_teams",
+                        "operationId": "PostCardToConversation"
+                      }
+                    },
+                    "metadata": {
+                      "operationMetadataId": "82e88d9a-76e6-48c9-8c8b-1d1da62acc94"
+                    }
+                  }
+                },
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "1b8dddd5-792e-44fe-aad1-db3bd51beecc"
+                }
+              }'
