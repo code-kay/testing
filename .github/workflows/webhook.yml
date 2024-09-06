@@ -15,14 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 모든 커밋을 가져오기 위해 fetch-depth를 0으로 설정
+          fetch-depth: 0 
 
       - name: Extract all commit messages from the PR merge
         run: |
-          # PR에서 머지된 모든 커밋 메시지를 가져오기
-          commits=$(git log --pretty=format:"%h %s" $GITHUB_SHA~10..$GITHUB_SHA | tr '\n' ' ')
+          # PR에서 머지된 모든 커밋 메시지 추출 (해시 코드 제거)
+          commits=$(git log --pretty=format:"- %s" $GITHUB_SHA~10..$GITHUB_SHA)
           echo "commit_messages=${commits}" >> $GITHUB_ENV
-
 
       - name: 웹훅 보내기
         run: |
