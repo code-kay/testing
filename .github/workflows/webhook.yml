@@ -14,17 +14,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 
+          fetch-depth: 0  # 모든 커밋을 가져오기 위해 fetch-depth 설정
 
-      - name: Extract all commit messages from the PR merge
+      - name: Retrieve previous commit SHA
+        id: get_previous_sha
         run: |
-          # PR에서 머지된 모든 커밋 메시지를 임시 파일에 저장
-          git log --pretty=format:"- %s" $GITHUB_SHA~10..$GITHUB_SHA > commit_messages.txt
+          # 저장된 직전 SHA가 있으면 가져오고 없으면 초기 커밋으로 설정
+          if [ -f previous_commit.txt ]; then
+            cat previous_commit.txt
+          else
+            echo "HEAD^" > previous_commit.txt
+          fi
+
+      - name: Extract new commit messages
+        run: |
+          # 이전 커밋 SHA를 읽어오고 새로운 SHA와 비교
+          previous_commit=$(cat previous_commit.txt)
+          current_commit=$(git rev-parse HEAD)
+          echo "Previous commit: $previous_commit"
+          echo "Current commit: $current_commit"
+
+          # 이전 커밋과 현재 커밋 사이의 커밋 메시지 추출
+          git log --pretty=format:"- %s" $previous_commit..$current_commit > new_commit_messages.txt
+
+      - name: Save current commit SHA for the next run
+        run: |
+          git rev-parse HEAD > previous_commit.txt
 
       - name: 웹훅 보내기
         run: |
-          # 파일에서 커밋 메시지 읽어오기
-          commit_messages=$(cat commit_messages.txt)
+          # 파일에서 새로 추가된 커밋 메시지 읽어오기
+          new_commit_messages=$(cat new_commit_messages.txt)
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
           curl -v -X POST "https://prod-21.southeastasia.logic.azure.com:443/workflows/4170e84816d5479b8561351ec691e162/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w_kQ40iVvmJoPBIWK6Iqpk5THr6_TIhABj2HmjIsulQ" \
@@ -75,7 +95,7 @@ jobs:
                           },
                           {
                             "type": "TextBlock",
-                            "text": "'"${{ env.commit_messages }}"'",
+                            "text": "'"$new_commit_messages"'",
                             "wrap": true
                           }
                       ]
