@@ -39,11 +39,4 @@ jobs:
                     }
                   }
                 ]
-                "actions": [
-                  {
-                    "type": "Action.OpenUrl",
-                    "title": "Github 보러가기",
-                    "url": "https://github.com/code-kay/testing"
-                  }
-                ]
               }'
