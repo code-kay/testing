@@ -32,8 +32,6 @@ jobs:
                         {
                           "type": "TextBlock",
                           "text": "'"$BRANCH_NAME"' 브랜치 빌드 시작!"
-                          "weight": "bolder",
-                          "size": "medium"
                         }
                       ]
                     }
