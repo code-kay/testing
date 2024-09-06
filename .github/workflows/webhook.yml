@@ -14,17 +14,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2 
+          fetch-depth: 0  # 모든 커밋을 가져오기 위해 fetch-depth 설정
 
-      - name: 커밋 메시지 추출
+      - name: Retrieve previous commit SHA
+        id: get_previous_sha
         run: |
-          # 이전 커밋과 현재 커밋의 차이를 기준으로 새로운 커밋만 추출
-          previous_commit=$(git rev-parse HEAD^)
+          # 저장된 직전 SHA가 있으면 가져오고 없으면 초기 커밋으로 설정
+          if [ -f previous_commit.txt ]; then
+            cat previous_commit.txt
+          else
+            echo "HEAD^" > previous_commit.txt
+          fi
+
+      - name: Extract new commit messages
+        run: |
+          # 이전 커밋 SHA를 읽어오고 새로운 SHA와 비교
+          previous_commit=$(cat previous_commit.txt)
           current_commit=$(git rev-parse HEAD)
+          echo "Previous commit: $previous_commit"
+          echo "Current commit: $current_commit"
+
+          # 이전 커밋과 현재 커밋 사이의 커밋 메시지 추출
           git log --pretty=format:"- %s" $previous_commit..$current_commit > new_commit_messages.txt
+
+      - name: Save current commit SHA for the next run
+        run: |
+          git rev-parse HEAD > previous_commit.txt
 
       - name: 웹훅 보내기
         run: |
+          # 파일에서 새로 추가된 커밋 메시지 읽어오기
           new_commit_messages=$(cat new_commit_messages.txt)
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
