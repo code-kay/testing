@@ -98,6 +98,14 @@ jobs:
                           "type": "TextBlock",
                           "text": "'"$commit_messages"'",
                           "wrap": true
+                        },
+                        {
+                          "type": "TextBlock",
+                          "weight": "Bolder",
+                          "size": "Medium",
+                          "color": "good",  # 성공 시 녹색
+                          "text": "✅ 빌드 성공",
+                          "wrap": true
                         }
                       ]
                     }
