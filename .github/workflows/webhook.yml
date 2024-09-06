@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - stage
+    #   - stage
       - dev
 
 jobs:
@@ -31,10 +31,19 @@ jobs:
                       "body": [
                         {
                           "type": "TextBlock",
-                          "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!"
+                          "text": "'"$BRANCH_NAME"' 브랜치 빌드 시작!"
+                          "weight": "bolder",
+                          "size": "medium"
                         }
                       ]
                     }
+                  }
+                ]
+                "actions": [
+                  {
+                    "type": "Action.OpenUrl",
+                    "title": "Github 보러가기",
+                    "url": "https://github.com/code-kay/testing"
                   }
                 ]
               }'
