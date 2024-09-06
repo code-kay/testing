@@ -16,53 +16,97 @@ jobs:
         run: |
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
-          curl -X POST https://example.com/webhook \
+          curl -v -X POST https://example.com/webhook \
           -H "Content-Type: application/json" \
           -d '{
-                "type": "object",
-                "attachments": [
+                "type": "AdaptiveCard",
+                "version": "1.2",
+                "body": [
                   {
-                    "contentType": "application/vnd.microsoft.card.adaptive",
-                    "content": {
-                      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                      "type": "AdaptiveCard",
-                      "version": "1.4",
-                      "body": [
-                        {
-                          "type": "TextBlock",
-                          "text": "AdaptiveCard Example",
-                          "weight": "Bolder",
-                          "size": "Large",
-                          "color": "Attention",
-                          "horizontalAlignment": "Center"
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "Summary: ",
-                          "wrap": true,
-                          "size": "Medium",
-                          "weight": "Bolder"
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "This is a dynamically generated message for the '$BRANCH_NAME' branch.",
-                          "wrap": true,
-                          "size": "Medium",
-                          "weight": "Bolder"
-                        },
-                        {
-                          "type": "ActionSet",
-                          "actions": [
-                            {
-                              "type": "Action.OpenUrl",
-                              "title": "View Details",
-                              "url": "https://example.com/details"
-                            }
-                          ],
-                          "spacing": "Medium"
-                        }
-                      ]
-                    }
+                    "type": "TextBlock",
+                    "text": "Press the buttons to toggle the images!",
+                    "wrap": true
+                  },
+                  {
+                    "type": "TextBlock",
+                    "text": "Here are some images:",
+                    "isVisible": false,
+                    "id": "textToToggle"
+                  },
+                  {
+                    "type": "ColumnSet",
+                    "columns": [
+                      {
+                        "type": "Column",
+                        "items": [
+                          {
+                            "style": "person",
+                            "type": "Image",
+                            "url": "https://picsum.photos/100/100?image=112",
+                            "isVisible": false,
+                            "id": "imageToToggle",
+                            "altText": "sample image 1",
+                            "size": "medium"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Column",
+                        "items": [
+                          {
+                            "type": "Image",
+                            "url": "https://picsum.photos/100/100?image=123",
+                            "isVisible": false,
+                            "id": "imageToToggle2",
+                            "altText": "sample image 2",
+                            "size": "medium"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "actions": [
+                  {
+                    "type": "Action.ToggleVisibility",
+                    "title": "Toggle!",
+                    "targetElements": [ "textToToggle", "imageToToggle", "imageToToggle2" ]
+                  },
+                  {
+                    "type": "Action.ToggleVisibility",
+                    "title": "Show!",
+                    "targetElements": [
+                      {
+                        "elementId": "textToToggle",
+                        "isVisible": true
+                      },
+                      {
+                        "elementId": "imageToToggle",
+                        "isVisible": true
+                      },
+                      {
+                        "elementId": "imageToToggle2",
+                        "isVisible": true
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Action.ToggleVisibility",
+                    "title": "Hide!",
+                    "targetElements": [
+                      {
+                        "elementId": "textToToggle",
+                        "isVisible": false
+                      },
+                      {
+                        "elementId": "imageToToggle",
+                        "isVisible": false
+                      },
+                      {
+                        "elementId": "imageToToggle2",
+                        "isVisible": false
+                      }
+                    ]
                   }
                 ]
               }'
