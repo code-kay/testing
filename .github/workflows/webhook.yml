@@ -39,7 +39,7 @@ jobs:
                                 {
                                     "type": "Image",
                                     "style": "Person",
-                                    "url": "https://aka.ms/AAp9xo4",
+                                    "url": "https://cdn-icons-png.flaticon.com/512/25/25231.png",
                                     "size": "Small"
                                 }
                                 ],
@@ -53,36 +53,21 @@ jobs:
                                 {
                                     "type": "TextBlock",
                                     "weight": "Bolder",
-                                    "text": "David Claux",
+                                    "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!",
                                     "wrap": true
                                 },
                                 {
                                     "type": "TextBlock",
                                     "targetWidth": "atMost:narrow",
                                     "spacing": "None",
-                                    "text": "Platform Architect",
+                                    "text": "[Github Link](https://github.com/code-kay/testing)",
                                     "isSubtle": true,
                                     "wrap": true
                                 }
                                 ],
                                 "width": "auto"
                             },
-                            {
-                                "type": "Column",
-                                "targetWidth": "atLeast:standard",
-                                "spacing": "medium",
-                                "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Platform Architect",
-                                    "isSubtle": true,
-                                    "wrap": true
-                                }
-                                ],
-                                "width": "stretch",
-                                "verticalContentAlignment": "center"
-                            }
-                            ]
+                        ]
                         }
                       ]
                     }
