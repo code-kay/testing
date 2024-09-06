@@ -19,10 +19,39 @@ jobs:
           curl -X POST https://example.com/webhook \
           -H "Content-Type: application/json" \
           -d '{
-                "type": "AdaptiveCard",
-                "body": [
-                    "type": "TextBlock",
-                    "size": "medium",
-                    "text": "Test"
-                    ]
+                "type": "Application/JSON",
+                "attachments": [
+                  {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": {
+                      "type": "AdaptiveCard",
+                      "version": "1.4",
+                      "body": [
+                        {
+                          "type": "TextBlock",
+                          "text": "Unassigned tickets (Number of tickets: {{lookupIssues.size}})",
+                          "wrap": true,
+                          "weight": "Bolder",
+                          "size": "Large",
+                          "color": "Accent"
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "{{#lookupIssues}}",
+                          "wrap": true
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "*{{fields.reporter.displayName.jsonEncode}}* has raised [{{key}} {{summary.jsonEncode}}]({{url}})",
+                          "wrap": true
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "{{/lookupIssues}}",
+                          "wrap": true
+                        }
+                      ]
+                    }
+                  }
+                ]
               }'
