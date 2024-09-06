@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send webhook with dynamic branch name
+      - name: 커밋 메시지 추출
+        run: |
+          commits=$(jq -r '.commits[] | .message' < $GITHUB_EVENT_PATH)
+          echo "commit_messages=${commits}" >> $GITHUB_ENV
+
+      - name: 웹훅 보내기
         run: |
           BRANCH_NAME="${{ github.ref }}"
           BRANCH_NAME=${BRANCH_NAME#refs/heads/}
@@ -29,7 +34,7 @@ jobs:
                       "type": "AdaptiveCard",
                       "version": "1.2",
                       "body": [
-                       {
+                          {
                             "type": "ColumnSet",
                             "columns": [
                             {
@@ -59,7 +64,12 @@ jobs:
                                 },
                                 ],
                                 "width": "auto"
-                            },
+                          },
+                          {
+                            "type": "TextBlock",
+                            "text": "${{ env.commit_messages }}",
+                            "wrap": true
+                          }
                         ]
                         }
                       ]
