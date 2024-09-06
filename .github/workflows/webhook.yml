@@ -56,20 +56,47 @@ jobs:
                       "version": "1.2",
                       "body": [
                         {
+                            "type": "ColumnSet",
+                            "columns": [
+                              {
+                                "type": "Column",
+                                "targetWidth": "atLeast:narrow",
+                                "items": [
+                                  {
+                                    "type": "Image",
+                                    "style": "Person",
+                                    "url": "https://cdn-icons-png.flaticon.com/512/25/25231.png",
+                                    "size": "Small"
+                                  }
+                                ],
+                                "width": "auto"
+                              },
+                              {
+                                "type": "Column",
+                                "spacing": "medium",
+                                "verticalContentAlignment": "center",
+                                "items": [
+                                  {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "size": "Large",
+                                    "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!",
+                                    "wrap": true
+                                  },
+                                ],
+                                "width": "auto"
+                              },
+                            ]
+                          },
+                        {
                           "type": "TextBlock",
                           "weight": "Bolder",
-                          "size": "Large",
-                          "text": "'"$BRANCH_NAME"' 브랜치에서 빌드가 시작되었습니다!",
+                          "text": "커밋 메시지:",
                           "wrap": true
                         },
                         {
                           "type": "TextBlock",
-                          "text": "커밋 메시지:\n'"$commit_messages"'",
-                          "wrap": true
-                        },
-                        {
-                          "type": "TextBlock",
-                          "text": "수정된 파일:\n'"$modified_files"'",
+                          "text": "'"$commit_messages"'",
                           "wrap": true
                         }
                       ]
