@@ -53,17 +53,10 @@ jobs:
                                 {
                                     "type": "TextBlock",
                                     "weight": "Bolder",
+                                    "size": "Large",
                                     "text": "'"$BRANCH_NAME"' 브랜치가 빌드를 시작했습니다!",
                                     "wrap": true
                                 },
-                                {
-                                    "type": "TextBlock",
-                                    "targetWidth": "atMost:narrow",
-                                    "spacing": "None",
-                                    "text": "[Github Link](https://github.com/code-kay/testing)",
-                                    "isSubtle": true,
-                                    "wrap": true
-                                }
                                 ],
                                 "width": "auto"
                             },
