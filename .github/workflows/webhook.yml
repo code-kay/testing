@@ -93,7 +93,6 @@ jobs:
                           "weight": "Bolder",
                           "text": "커밋 메시지:",
                           "wrap": true
-                          "color": "good"
                         },
                         {
                           "type": "TextBlock",
